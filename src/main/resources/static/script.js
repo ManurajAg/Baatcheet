@@ -19,11 +19,39 @@ function showMessage(message){
 	$("#message-container-table").append(`<tr><td><b>${message.name} : </b>${message.content}</td></tr>`)
 }
 
+
+function sendMessage(){
+	
+	let messageObj = {
+		name:localStorage.getItem("name"),
+		content:$("#msg-value").val()
+	}
+	stompClient.send("/app/message",{},JSON.stringify(messageObj));
+}
+
+function logout(){
+	localStorage.removeItem("name");
+	if(stompClient!=null){
+		stompClient.disconnect();
+		$("#name-form").removeClass('d-none');
+		$("#chat-room").addClass('d-none');
+	}
+}
+
 $(document).ready((e)=>{
 	$("#login").click(()=>{
 		let name = $("#name-value").val();
 		localStorage.setItem("name",name);
+		$("#name-title").text(`Welcome, ${name}`);
 		connect();
 		
+	})
+	
+	$("#send-btn").click(()=>{
+		sendMessage();
+	})
+	
+	$("#logout").click(()=>{
+		logout();
 	})
 })
